@@ -1,6 +1,8 @@
 package com.example.seckill.controller;
 
 import com.example.seckill.entities.User;
+import com.example.seckill.redis.RedisService;
+import com.example.seckill.redis.UserKey;
 import com.example.seckill.result.CodeMsg;
 import com.example.seckill.result.Result;
 import com.example.seckill.service.UserService;
@@ -15,6 +17,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DemoController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    RedisService redisService;
+
+    @RequestMapping("/redis/get")
+    @ResponseBody
+    public Result<User> redisGet() {
+        User user = redisService.get(UserKey.getById, "" + 1, User.class);
+        return Result.success(user);
+    }
+
+    @RequestMapping("/redis/set")
+    @ResponseBody
+    public Result<Boolean> redisSet() {
+        User user = new User();
+        user.setId(1);
+        user.setName("1111");
+        redisService.set(UserKey.getById, "" + 1, user);//UserKey:id1
+        return Result.success(true);
+    }
 
     @RequestMapping("/db/get")
     @ResponseBody
