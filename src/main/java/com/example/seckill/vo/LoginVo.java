@@ -2,11 +2,17 @@ package com.example.seckill.vo;
 
 import javax.validation.constraints.NotNull;
 
+import com.example.seckill.validator.IsMobile;
 import org.hibernate.validator.constraints.Length;
 
 public class LoginVo {
 
+    @NotNull
+    @IsMobile
     private String mobile;
+
+    @NotNull
+    @Length(min = 32)
     private String password;
 
     public String getMobile() {
