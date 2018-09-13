@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>登录</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background: url('/img/background.jpg') no-repeat;
+            background-size: 100% 100%;
+            padding-top: 100px;
+        }
+
+        .form-horizontal {
+            background: #fff;
+            padding-bottom: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 70px;
+        }
+
+        .form-horizontal .heading {
+            display: block;
+            font-size: 35px;
+            /* font-weight: 700; */
+            padding: 35px 0;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 30px;
+        }
+
+        .form-horizontal .form-group {
+            padding: 0 40px;
+            margin: 0 0 25px 0;
+            position: relative;
+        }
+
+        .form-horizontal .form-group i {
+            position: absolute;
+            top: 12px;
+            left: 60px;
+            font-size: 17px;
+            color: #c8c8c8;
+            transition: all 0.5s ease 0s;
+        }
+
+        .form-horizontal .form-control {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            box-shadow: none;
+            padding: 0 20px 0 45px;
+            height: 40px;
+            transition: all 0.3s ease 0s;
+        }
+
+        .form-horizontal .btn {
+            font-size: 14px;
+            color: #fff;
+            background: #00b4ef;
+            border-radius: 30px;
+            padding: 10px 40px;
+            margin: 0 20px;
+            border: none;
+            text-transform: capitalize;
+            transition: all 0.5s ease 0s;
+        }
+    </style>
+
+</head>
+<body>
+<div class="col-md-offset-6 col-md-4">
+    <form name="loginForm" id="loginForm" method="post" class="form-horizontal">
+
+        <span class="heading">用户登录</span>
+
+        <div class="form-group">
+            <input id="mobile" name="mobile" class="form-control" type="text" placeholder="请输入手机号码"
+                   required="true" minlength="11" maxlength="11"/>
+            <i class="glyphicon glyphicon-user"></i>
+        </div>
+
+        <div class="form-group">
+            <input id="password" name="password" class="form-control" type="password" placeholder="请输入密码"
+                   required="true" minlength="6" maxlength="16"/>
+            <i class="glyphicon glyphicon-lock"></i>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default" type="reset" onclick="reset()">重置</button>
+            <button class="btn btn-default" type="submit" onclick="login()">登录</button>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    function login() {
+        $("#loginForm").validate({//验证
+            submitHandler: function (form) {
+                doLogin();
+            }
+        });
+    }
+
+    function doLogin() {
+        g_showLoading();
+
+        var inputPass = $("#password").val();
+        var salt = g_passsword_salt;
+        var str = "" + salt.charAt(0) + salt.charAt(2) + inputPass + salt.charAt(5) + salt.charAt(4);
+        var password = md5(str);
+
+        $.ajax({
+            url: "/login/do_login",
+            type: "POST",
+            data: {
+                mobile: $("#mobile").val(),
+                password: password
+            },
+            success: function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg("成功");
+                    //window.location.href="/goods/to_list";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.closeAll();
+            }
+        });
+    }
+</script>
+</html>
